@@ -1,1 +1,22 @@
+spring:
+  application:
+    name: ms-auth
+  cloud:
+    openfeign:
+      client:
+        config:
+          user:
+            url: http://localhost:9090/v1/ms-user
+          default:
+            connectTimeout: 5000
+            readTimeout: 5000
+            loggerLevel: basic
 
+logging:
+  level:
+    root: INFO
+    az.bassied: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG
+
+server:
+  port: 9091

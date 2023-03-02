@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <springProfile name="default">
+        <appender name="CONSOLE_LOGSTASH" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <provider class="net.logstash.logback.composite.loggingevent.ThrowableMessageJsonProvider">
+                    <fieldName>error.message</fieldName>
+                </provider>
+                <provider class="net.logstash.logback.composite.loggingevent.ThrowableClassNameJsonProvider">
+                    <fieldName>error.kind</fieldName>
+                </provider>
+
+                <fieldNames>
+                    <logger>logger.name</logger>
+                    <thread>logger.thread_name</thread>
+                    <stackTrace>error.stack</stackTrace>
+                </fieldNames>
+            </encoder>
+        </appender>
+
+        <root level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE_LOGSTASH"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="local">
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                <charset>utf8</charset>
+            </encoder>
+        </appender>
+
+        <root level="DEBUG">
+            <appender-ref ref="STDOUT"/>
+        </root>
+    </springProfile>
+
+</configuration>
