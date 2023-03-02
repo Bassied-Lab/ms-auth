@@ -6,7 +6,7 @@ spring:
       client:
         config:
           user:
-            url: http://localhost:9090/v1/ms-user
+            url: http://localhost:9090/v1/internal/ms-user
           default:
             connectTimeout: 5000
             readTimeout: 5000
