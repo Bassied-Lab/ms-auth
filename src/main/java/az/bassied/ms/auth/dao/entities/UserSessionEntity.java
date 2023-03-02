@@ -1,5 +1,6 @@
 package az.bassied.ms.auth.dao.entities;
 
+import az.bassied.ms.auth.model.jwt.AccessTokenClaimsSet;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,14 +17,15 @@ import java.io.Serializable;
 @Setter
 @Builder
 @ToString
-@RedisHash(value = "verification")
-public class VerificationEntity implements Serializable {
+@RedisHash(value = "userSession")
+public class UserSessionEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     @Id
-    private String token;
     private String email;
-    @Value("${bucket.verification.ttl}")
+    private AccessTokenClaimsSet accessTokenClaimsSet;
+    private String publicKey;
+    @Value("${bucket.user.session.ttl}")
     private long ttl;
     @TimeToLive
     public long getTimeToLive() {

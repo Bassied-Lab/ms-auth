@@ -6,7 +6,8 @@ spring:
       client:
         config:
           user:
-            url: http://localhost:9090/v1/internal/ms-user
+            url: "http://localhost:9090/v1/internal/ms-user"
+
           default:
             connectTimeout: 5000
             readTimeout: 5000
@@ -17,6 +18,32 @@ logging:
     root: INFO
     az.bassied: DEBUG
     org.springframework.web.client.RestTemplate: DEBUG
+
+jwt:
+  accessToken:
+    expiration:
+      time: 600
+  refreshToken:
+    expiration:
+      count: 50
+      time: 10800
+
+#ttl in seconds
+bucket:
+  user:
+    srp:
+      ttl: 300
+    session:
+      ttl: 86400
+  incorrectCredentialTry:
+    maxTryCount: 10
+    expire:
+      ttl: 3600
+  account:
+    lock:
+      ttl: 900
+  verification:
+    ttl: 600
 
 server:
   port: 9091

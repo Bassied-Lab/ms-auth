@@ -11,19 +11,20 @@ import org.springframework.data.redis.core.TimeToLive;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Builder
 @ToString
-@RedisHash(value = "verification")
-public class VerificationEntity implements Serializable {
+@RedisHash(value = "accountLock")
+public class AccountLockEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     @Id
-    private String token;
     private String email;
-    @Value("${bucket.verification.ttl}")
+    private LocalDateTime lockExpireDate;
+    @Value("${bucket.account.lock.ttl}")
     private long ttl;
     @TimeToLive
     public long getTimeToLive() {

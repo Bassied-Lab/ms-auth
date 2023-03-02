@@ -36,6 +36,10 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.5.3.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 
+    // crypto
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.0'
+    implementation 'com.nimbusds:srp6a:2.1.0'
+
     //Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

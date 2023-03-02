@@ -35,7 +35,7 @@ public class SignUpServiceImpl implements SignUpService {
         String token = util.generateToken();
         //todo send verification code by email
         logger.debug("Action.debug verification token for email {} is {}", user.email(), token);
-        verificationRepo.save(new VerificationEntity(user.email(), token));
+        verificationRepo.save(VerificationEntity.builder().email(user.email()).token(token).build());
         logger.info("ActionLog.signUp.end");
     }
 
@@ -47,9 +47,9 @@ public class SignUpServiceImpl implements SignUpService {
                 .findById(token)
                 .orElseThrow(() -> new NotFoundException(Messages.TOKEN_NOT_FOUND, Messages.TOKEN_NOT_FOUND_MSG));
 
-        logger.debug("Action.confirm for {}", verification.email());
+        logger.debug("Action.confirm for {}", verification.getEmail());
 
-        UserDTO user = userClient.activateUserByEmail(verification.email());
+        UserDTO user = userClient.activateUserByEmail(verification.getEmail());
         //todo send mail
         //notificationService.sendWelcomeNotification(user);
 

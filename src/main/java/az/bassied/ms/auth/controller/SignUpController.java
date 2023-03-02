@@ -22,7 +22,7 @@ public class SignUpController {
         service.signUp(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-    @PostMapping("/confirm/{token}")
+    @PostMapping(URLs.SIGN_UP_CONFIRM)
     public void confirm(@PathVariable @NotNull String token) {
         service.confirm(token);
     }

@@ -12,10 +12,11 @@ public final class Headers {
 
     public static final String USER_IP = "X-Forwarded-For";
     public static final String USER_AGENT = "User-Agent";
+    public static final String OPERATION = "operation";
 
     public static final String REFRESH_TOKEN = "refresh-token";
-    public static final String OPERATION = "operation";
     public static final String ACCESS_TOKEN = "access-token";
+    public static final String COOKIE_IDENTITY = "identity";
 
     public static final String LANGUAGE = "lang";
 }

@@ -1,7 +1,12 @@
 package az.bassied.ms.auth.error.handler;
 
 import az.bassied.ms.auth.error.ErrorResponse;
-import az.bassied.ms.auth.error.exceptions.*;
+import az.bassied.ms.auth.error.exceptions.AuthException;
+import az.bassied.ms.auth.error.exceptions.ClientException;
+import az.bassied.ms.auth.error.exceptions.ForbiddenException;
+import az.bassied.ms.auth.error.exceptions.GeneralException;
+import az.bassied.ms.auth.error.exceptions.NotFoundException;
+import az.bassied.ms.auth.error.exceptions.ValidationException;
 import az.bassied.ms.auth.model.consts.Messages;
 import feign.FeignException;
 import org.slf4j.Logger;
@@ -95,5 +100,14 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
     }
 
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(AuthException.class)
+    public ErrorResponse handleAuthException(AuthException ex) {
+        logger.error("Action.handleAuthException.error auth exception: {}", ex.toString());
+        return new ErrorResponse(ex.getCode(), ex.getMessage());
+    }
+
+    //todo add handlers for new exceptions
 
 }

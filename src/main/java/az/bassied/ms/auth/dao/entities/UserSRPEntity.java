@@ -1,5 +1,6 @@
 package az.bassied.ms.auth.dao.entities;
 
+import com.nimbusds.srp6.SRP6ServerSession;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,21 +13,27 @@ import org.springframework.data.redis.core.TimeToLive;
 import java.io.Serial;
 import java.io.Serializable;
 
+
 @Getter
 @Setter
-@Builder
 @ToString
-@RedisHash(value = "verification")
-public class VerificationEntity implements Serializable {
+@Builder(toBuilder = true)
+@RedisHash(value = "userSRP")
+public class UserSRPEntity implements Serializable {
+
     @Serial
     private static final long serialVersionUID = 1L;
     @Id
-    private String token;
     private String email;
-    @Value("${bucket.verification.ttl}")
+    private Long userId;
+    @ToString.Exclude
+    private SRP6ServerSession srpSession;
+    @Value("${bucket.user.srp.ttl}")
     private long ttl;
     @TimeToLive
     public long getTimeToLive() {
         return ttl;
     }
+
+
 }

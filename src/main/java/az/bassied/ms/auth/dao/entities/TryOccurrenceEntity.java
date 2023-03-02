@@ -16,17 +16,18 @@ import java.io.Serializable;
 @Setter
 @Builder
 @ToString
-@RedisHash(value = "verification")
-public class VerificationEntity implements Serializable {
+@RedisHash(value = "tryOccurrence")
+public class TryOccurrenceEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     @Id
-    private String token;
     private String email;
-    @Value("${bucket.verification.ttl}")
+    private Integer count;
+    @Value("${bucket.incorrectCredentialTry.expire.ttl}")
     private long ttl;
     @TimeToLive
     public long getTimeToLive() {
         return ttl;
     }
 }
+
