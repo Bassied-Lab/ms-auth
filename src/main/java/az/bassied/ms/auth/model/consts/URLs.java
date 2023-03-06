@@ -11,7 +11,7 @@ public final class URLs {
 
     //Auth controller
     public static final String SRP1 = ROOT + "/srp/step1";
-    public static final String SRP2 = ROOT + "/srp/step1";
+    public static final String SRP2 = ROOT + "/srp/step2";
     public static final String CHANGE_PASS = ROOT + "/change-password";
     public static final String LOGOUT = ROOT + "/logout";
     public static final String REFRESH_TOKEN = ROOT + "/token/refresh";

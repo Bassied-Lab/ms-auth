@@ -90,7 +90,7 @@ public class AuthServiceImpl implements AuthService {
 
             UserSRPEntity srpEntity = userSRPRepository.findById(req.email()).orElseThrow(EmptyCacheException::new);
 
-            SRP6ServerSession srpSession = srpEntity.getSrpSession();
+            SRP6ServerSession srpSession = (SRP6ServerSession) srpEntity.getSrpSession();
             SrpStep2Res srpStep2Res = srp6Helper.doRealSrp2(req, srpSession, srpEntity.getUserId());
 
             AuthTokensDTO tokens = tokenService.generateTokens(srpEntity.getEmail(), TokenIssuer.BS);
