@@ -3,13 +3,8 @@ package az.bassied.ms.auth.service.impl;
 import az.bassied.ms.auth.client.UserClient;
 import az.bassied.ms.auth.crypto.SRP6Helper;
 import az.bassied.ms.auth.dao.entities.UserSRPEntity;
-import az.bassied.ms.auth.dao.repos.UserSRPRepository;
 import az.bassied.ms.auth.dao.repos.UserSessionRepository;
-import az.bassied.ms.auth.error.exceptions.AccountLockedException;
-import az.bassied.ms.auth.error.exceptions.AuthException;
-import az.bassied.ms.auth.error.exceptions.EmptyCacheException;
-import az.bassied.ms.auth.error.exceptions.IncorrectCredentialsException;
-import az.bassied.ms.auth.error.exceptions.TryLimitExceededException;
+import az.bassied.ms.auth.error.exceptions.*;
 import az.bassied.ms.auth.model.common.UserDTO;
 import az.bassied.ms.auth.model.consts.Headers;
 import az.bassied.ms.auth.model.enums.TokenIssuer;
@@ -28,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -44,8 +40,8 @@ public class AuthServiceImpl implements AuthService {
     private final TokenService tokenService;
     private final JwtUtil jwtUtil;
     private final LoginTryLimitChecker loginTryLimitChecker;
-    private final UserSRPRepository userSRPRepository;
     private final UserSessionRepository userSessionRepository;
+    private final RedisTemplate<String, UserSRPEntity> redis;
 
 
     @Override
@@ -88,19 +84,22 @@ public class AuthServiceImpl implements AuthService {
             MDC.put(Headers.USER_EMAIL, req.email());
             logger.info("Action.srpAuthStep2.start");
 
-            UserSRPEntity srpEntity = userSRPRepository.findById(req.email()).orElseThrow(EmptyCacheException::new);
+            UserSRPEntity srpEntity = redis.opsForValue().get(getKey(req.email()));
+            if (srpEntity == null) {
+                throw new EmptyCacheException();
+            }
+            SRP6ServerSession srpSession =  srpEntity.getSrpSession();
 
-            SRP6ServerSession srpSession = (SRP6ServerSession) srpEntity.getSrpSession();
             SrpStep2Res srpStep2Res = srp6Helper.doRealSrp2(req, srpSession, srpEntity.getUserId());
 
             AuthTokensDTO tokens = tokenService.generateTokens(srpEntity.getEmail(), TokenIssuer.BS);
 
-            userSRPRepository.delete(srpEntity);
+            redis.opsForValue().getAndDelete(getKey(req.email()));
 
             logger.info("Action.srpAuthStep2.success");
             return Pair.of(srpStep2Res, tokens);
         } catch (Exception ex) {
-            logger.error("ActionLog.srpAuthStep2.fail ex: {}", ex.toString());
+            logger.error("Action.srpAuthStep2.fail ex: {}", ex.toString());
             try {
                 loginTryLimitChecker.addTryOccurrence(req.email());
             } catch (TryLimitExceededException tryLimitEx) {
@@ -130,7 +129,7 @@ public class AuthServiceImpl implements AuthService {
             userClient.changePassword(user.id(), request);
 
             AuthTokensDTO tokens = tokenService.generateTokens(user.email(), TokenIssuer.BS);
-            userSRPRepository.deleteByEmail(user.email());
+            redis.opsForValue().getAndDelete(getKey(user.email()));
             logger.info("Action.changePasswordStep.success");
             return new AuthTokensDTO(tokens.accessToken(), tokens.refreshToken());
         } catch (Exception ex) {
@@ -144,11 +143,7 @@ public class AuthServiceImpl implements AuthService {
 
         SrpStep1Res res = srp6Helper.doRealSrp1(srpSession, user);
 
-        userSRPRepository.save(UserSRPEntity.builder()
-                .userId(user.id())
-                .email(user.email())
-                .srpSession(srpSession)
-                .build());
+        redis.opsForValue().set(getKey(user.email()), new UserSRPEntity(user.email(), user.id(), srpSession));
 
         return res;
     }
@@ -159,11 +154,7 @@ public class AuthServiceImpl implements AuthService {
         // Generating mock SrpStep1Res to prevent email enumeration in Pentest
         SrpStep1Res res = srp6Helper.doFakeSrp1(user.email(), srpSession);
 
-        userSRPRepository.save(UserSRPEntity.builder()
-                .userId(user.id())
-                .email(user.email())
-                .srpSession(srpSession)
-                .build());
+        redis.opsForValue().set(getKey(user.email()), new UserSRPEntity(user.email(), user.id(), srpSession));
 
         return res;
     }
@@ -176,5 +167,8 @@ public class AuthServiceImpl implements AuthService {
         return srp6Helper.doFakeSrp1(email, srpSession);
     }
 
+    private String getKey(String email) {
+        return String.format("AUTH_" + email);
+    }
 
 }

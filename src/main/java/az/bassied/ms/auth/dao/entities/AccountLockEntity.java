@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Builder
 @ToString
 @RedisHash(value = "accountLock")
 public class AccountLockEntity implements Serializable {
@@ -29,5 +28,10 @@ public class AccountLockEntity implements Serializable {
     @TimeToLive
     public long getTimeToLive() {
         return ttl;
+    }
+
+    public AccountLockEntity(String email, LocalDateTime lockExpireDate) {
+        this.email = email;
+        this.lockExpireDate = lockExpireDate;
     }
 }

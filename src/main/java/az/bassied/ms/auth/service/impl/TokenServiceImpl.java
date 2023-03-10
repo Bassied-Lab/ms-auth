@@ -3,17 +3,12 @@ package az.bassied.ms.auth.service.impl;
 import az.bassied.ms.auth.client.UserClient;
 import az.bassied.ms.auth.dao.entities.UserSessionEntity;
 import az.bassied.ms.auth.dao.repos.UserSessionRepository;
-import az.bassied.ms.auth.error.exceptions.AuthException;
-import az.bassied.ms.auth.error.exceptions.EmptyCacheException;
-import az.bassied.ms.auth.error.exceptions.ForbiddenException;
-import az.bassied.ms.auth.error.exceptions.RefreshTokenException;
-import az.bassied.ms.auth.error.exceptions.TokenExpiredException;
-import az.bassied.ms.auth.error.exceptions.TokenParsingException;
+import az.bassied.ms.auth.error.exceptions.*;
 import az.bassied.ms.auth.model.common.UserDTO;
-import az.bassied.ms.auth.model.enums.UserStatus;
 import az.bassied.ms.auth.model.consts.Headers;
 import az.bassied.ms.auth.model.consts.Messages;
 import az.bassied.ms.auth.model.enums.TokenIssuer;
+import az.bassied.ms.auth.model.enums.UserStatus;
 import az.bassied.ms.auth.model.jwt.AccessTokenClaimsSet;
 import az.bassied.ms.auth.model.jwt.AuthTokensDTO;
 import az.bassied.ms.auth.model.jwt.RefreshTokenClaimsSet;
@@ -77,16 +72,13 @@ public class TokenServiceImpl implements TokenService {
 
         var keyPair = jwtUtil.generateKeyPair();
 
-;
+        ;
 
-        userSessionRepository.save(UserSessionEntity.builder()
-                .email(tokensRequest.email())
-                .accessTokenClaimsSet(accessTokenClaimsSet)
-                .publicKey(Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded()))
-                .build());
+        userSessionRepository.save(new UserSessionEntity(tokensRequest.email(),
+                accessTokenClaimsSet,
+                Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded())));
 
         logger.debug("Action.generateTokens.debug saved session cache data");
-
 
         var accessToken = jwtUtil.generateToken(accessTokenClaimsSet, keyPair.getPrivate());
         var refreshToken = jwtUtil.generateToken(refreshTokenClaimsSet, keyPair.getPrivate());

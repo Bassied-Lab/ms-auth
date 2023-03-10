@@ -42,7 +42,7 @@ public class LoginTryLimitCheckerImpl implements LoginTryLimitChecker {
 
         var entity = tryOccurrenceRepository
                 .findById(email)
-                .orElse(tryOccurrenceRepository.save(TryOccurrenceEntity.builder().email(email).count(0).build()));
+                .orElse(tryOccurrenceRepository.save(new TryOccurrenceEntity(email, 0)));
         entity.setCount(entity.getCount() + 1);
 
         checkTryLimitExceeded(email, entity.getCount());
@@ -55,13 +55,13 @@ public class LoginTryLimitCheckerImpl implements LoginTryLimitChecker {
 
     @Override
     public void lockAccountTemporarily(String email) {
-        logger.debug("Account.lockAccountTemporary.start for email {}", email);
+        logger.debug("Action.lockAccountTemporary.start for email {}", email);
 
         var lockExpireTime = LocalDateTime.now().plusSeconds(accountLockTTL);
 
-        accountLockRepository.save(AccountLockEntity.builder().email(email).lockExpireDate(lockExpireTime).build());
+        accountLockRepository.save(new AccountLockEntity(email, lockExpireTime));
 
-        logger.debug("Account.lockAccountTemporary.end for email {}", email);
+        logger.debug("Action.lockAccountTemporary.end for email {}", email);
     }
 
     @Override

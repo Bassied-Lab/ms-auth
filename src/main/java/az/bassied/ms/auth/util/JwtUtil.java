@@ -44,7 +44,7 @@ public class JwtUtil {
 
             return keyPairGen.generateKeyPair();
         } catch (NoSuchAlgorithmException e) {
-            logger.error("No such algorithm", e);
+            logger.error("Action.generateKeyPair.error No such algorithm", e);
             throw new AuthException();
         }
     }
@@ -53,10 +53,10 @@ public class JwtUtil {
         SignedJWT signedJWT;
         try {
             var json = objectMapper.writeValueAsString(accessTokenClaimsSet);
-            logger.debug("accessTokenJson: {}", json);
+            logger.debug("Action.generateToken.debug accessTokenJson: {}", json);
             signedJWT = generateSignedJWT(json, privateKey);
         } catch (Exception e) {
-            logger.error("Cannot generate access token", e);
+            logger.error("Action.generateToken.error cannot generate access token", e);
             throw new TokenGenerationException();
         }
         return signedJWT.serialize();
@@ -67,7 +67,7 @@ public class JwtUtil {
         try {
             signedJWT = generateSignedJWT(objectMapper.writeValueAsString(refreshTokenClaimsSet), privateKey);
         } catch (Exception e) {
-            logger.error("Cannot generate refresh token", e);
+            logger.error("Action.generateToken.error cannot generate refresh token", e);
             throw new TokenGenerationException();
         }
         return signedJWT.serialize();
@@ -81,7 +81,7 @@ public class JwtUtil {
                 throw new TokenParsingException();
             }
         } catch (ParseException | JOSEException e) {
-            logger.error("Can't parse token ", e);
+            logger.error("Action.verifyToken.error can't parse token ", e);
             throw new TokenParsingException();
         }
     }
@@ -104,7 +104,7 @@ public class JwtUtil {
         try {
             claimsSet = objectMapper.readValue(getClaimsFromToken(token).toString(), AccessTokenClaimsSet.class);
         } catch (IOException | ParseException e) {
-            logger.error("Can't parse access token", e);
+            logger.error("Action.getClaimsFromAccessToken.error can't parse access token", e);
             throw new TokenParsingException();
         }
         return claimsSet;
@@ -115,7 +115,7 @@ public class JwtUtil {
         try {
             claimsSet = objectMapper.readValue(getClaimsFromToken(token).toString(), RefreshTokenClaimsSet.class);
         } catch (IOException | ParseException e) {
-            logger.error("Can't parse refresh token", e);
+            logger.error("Action.getClaimsFromRefreshToken.error can't parse refresh token", e);
             throw new TokenParsingException();
         }
         return claimsSet;

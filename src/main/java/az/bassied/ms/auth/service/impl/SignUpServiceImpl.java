@@ -35,8 +35,8 @@ public class SignUpServiceImpl implements SignUpService {
         String token = util.generateToken();
         //todo send verification code by email
         logger.debug("Action.debug verification token for email {} is {}", user.email(), token);
-        verificationRepo.save(VerificationEntity.builder().email(user.email()).token(token).build());
-        logger.info("ActionLog.signUp.end");
+        verificationRepo.save(new VerificationEntity(token, user.email()));
+        logger.info("Action.signUp.end");
     }
 
     @Override

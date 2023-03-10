@@ -1,6 +1,6 @@
 package az.bassied.ms.auth.dao.entities;
 
-import lombok.Builder;
+import com.nimbusds.srp6.SRP6ServerSession;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,8 +16,6 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-@Builder(toBuilder = true)
-@RedisHash(value = "userSRP")
 public class UserSRPEntity implements Serializable {
 
     @Serial
@@ -26,7 +24,7 @@ public class UserSRPEntity implements Serializable {
     private String email;
     private Long userId;
     @ToString.Exclude
-    private Object srpSession;
+    private SRP6ServerSession srpSession;
     @Value("${bucket.user.srp.ttl}")
     private long ttl;
     @TimeToLive
@@ -34,4 +32,9 @@ public class UserSRPEntity implements Serializable {
         return ttl;
     }
 
+    public UserSRPEntity(String email, Long userId, SRP6ServerSession srpSession){
+        this.email = email;
+        this.userId = userId;
+        this.srpSession = srpSession;
+    }
 }

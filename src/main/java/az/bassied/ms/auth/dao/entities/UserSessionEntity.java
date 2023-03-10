@@ -15,7 +15,6 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-@Builder
 @ToString
 @RedisHash(value = "userSession")
 public class UserSessionEntity implements Serializable {
@@ -30,5 +29,11 @@ public class UserSessionEntity implements Serializable {
     @TimeToLive
     public long getTimeToLive() {
         return ttl;
+    }
+
+    public UserSessionEntity(String email, AccessTokenClaimsSet accessTokenClaimsSet, String publicKey) {
+        this.email = email;
+        this.accessTokenClaimsSet = accessTokenClaimsSet;
+        this.publicKey = publicKey;
     }
 }

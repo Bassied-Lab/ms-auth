@@ -14,7 +14,6 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-@Builder
 @ToString
 @RedisHash(value = "verification")
 public class VerificationEntity implements Serializable {
@@ -28,5 +27,10 @@ public class VerificationEntity implements Serializable {
     @TimeToLive
     public long getTimeToLive() {
         return ttl;
+    }
+
+    public VerificationEntity(String token, String email) {
+        this.token = token;
+        this.email = email;
     }
 }

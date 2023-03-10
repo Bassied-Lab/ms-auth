@@ -14,7 +14,6 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-@Builder
 @ToString
 @RedisHash(value = "tryOccurrence")
 public class TryOccurrenceEntity implements Serializable {
@@ -28,6 +27,11 @@ public class TryOccurrenceEntity implements Serializable {
     @TimeToLive
     public long getTimeToLive() {
         return ttl;
+    }
+
+    public TryOccurrenceEntity(String email, Integer count) {
+        this.email = email;
+        this.count = count;
     }
 }
 
